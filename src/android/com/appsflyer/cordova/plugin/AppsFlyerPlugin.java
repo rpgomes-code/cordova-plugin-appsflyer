@@ -470,6 +470,7 @@ public class AppsFlyerPlugin extends CordovaPlugin {
             @Override
             public void onDeepLinking(@NonNull DeepLinkResult deepLinkResult) {
                 try {
+                    Log.d("AppsFlyer", "registerDeepLinkListener");
                     DeepLinkResult.Error dlError = deepLinkResult.getError();
                     JSONObject deepLinkObj = new JSONObject();
                     deepLinkObj.put("deepLinkStatus", deepLinkResult.getStatus());
@@ -484,6 +485,7 @@ public class AppsFlyerPlugin extends CordovaPlugin {
                             deepLinkObj.put("isDeferred", deepLinkResult.getDeepLink().isDeferred());
                         }
                     }
+                    Log.d("AppsFlyer", "registerDeepLinkListener deepLinkObj" + deepLinkObj);
                     sendEvent(deepLinkObj);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -575,6 +577,7 @@ public class AppsFlyerPlugin extends CordovaPlugin {
     private void sendEvent(JSONObject params) {
 
         final String jsonStr = params.toString();
+        Log.d("AppsFlyer", "sendEvent: " + jsonStr);
 
         if (
                 (params.optString("type") == AF_ON_ATTRIBUTION_FAILURE
