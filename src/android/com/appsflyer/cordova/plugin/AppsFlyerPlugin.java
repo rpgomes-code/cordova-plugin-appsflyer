@@ -187,6 +187,8 @@ public class AppsFlyerPlugin extends CordovaPlugin {
             return logAdRevenue(args);
         } else if ("disableAppSetId".equals(action)) {
             return disableAppSetId();
+        } else if ("performOnDeepLinking".equals(action)) {
+            return performOnDeepLinking(args);
         }
         return false;
     }
@@ -1286,6 +1288,27 @@ private boolean validateAndLogInAppPurchaseV2(JSONArray args, final CallbackCont
                 Log.d("AppsFlyer", urls.toString());
             }
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    /**
+     * Manually triggers deep link resolution for a given URL.
+     * Creates an Intent with the URL and calls performOnDeepLinking,
+     * which causes the DeepLinkListener (registerDeepLink) to fire
+     * with the resolved result.
+     */
+    private boolean performOnDeepLinking(JSONArray args) {
+        try {
+            String url = args.getString(0);
+            if (url != null && !url.isEmpty()) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                AppsFlyerLib.getInstance().performOnDeepLinking(intent, cordova.getActivity());
+                Log.d("AppsFlyer", "performOnDeepLinking called with URL: " + url);
+            }
+        } catch (Exception e) {
+            Log.e("AppsFlyer", "Error in performOnDeepLinking: " + e.getMessage());
             e.printStackTrace();
         }
         return true;

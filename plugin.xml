@@ -31,6 +31,7 @@
         <engine name="cordova" version=">=4.3.0"/>
     </engines>
 
+
     <js-module src="www/appsflyer.js" name="appsflyer">
         <clobbers target="window.plugins.appsFlyer"/>
     </js-module>
@@ -59,6 +60,7 @@
                 </intent-filter>
             </receiver>
         </config-file>
+
 
         <source-file src="src/android/com/appsflyer/cordova/plugin/AppsFlyerPlugin.java"
                      target-dir="src/com/appsflyer/cordova/plugin"/>

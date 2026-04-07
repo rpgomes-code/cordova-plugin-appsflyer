@@ -272,11 +272,20 @@ if (!window.CustomEvent) {
     };
 
     /**
-     * Log deep linking
+     * Log deep linking (iOS only)
      */
     AppsFlyer.prototype.handleOpenUrl = function (url) {
         argscheck.checkArgs('*', 'AppsFlyer.handleOpenUrl', arguments);
         exec(null, null, 'AppsFlyerPlugin', 'handleOpenUrl', [url]);
+    };
+
+    /**
+     * Manually trigger deep link resolution for a URL (Android).
+     * Causes registerDeepLink callback to fire with the resolved result.
+     */
+    AppsFlyer.prototype.performOnDeepLinking = function (url) {
+        argscheck.checkArgs('*', 'AppsFlyer.performOnDeepLinking', arguments);
+        exec(null, null, 'AppsFlyerPlugin', 'performOnDeepLinking', [url]);
     };
 
     /**
