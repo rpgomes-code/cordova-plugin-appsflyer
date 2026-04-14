@@ -45,7 +45,28 @@
     }
 }
 
+- (BOOL) isSelfOpenedUrl:(NSURL *)url sourceApplication:(NSString *)sourceApplication {
+    NSString *bundleId = [[NSBundle mainBundle] bundleIdentifier];
+    // Skip URLs whose scheme is the app's own custom scheme (e.g. pt.nos.fera.dev://...)
+    // These are internal navigations (e.g. OutSystems ExternalSite) and re-processing them
+    // causes an infinite loop via AppsFlyer's swizzled application:openURL: handler.
+    if (url.scheme && bundleId && [url.scheme caseInsensitiveCompare:bundleId] == NSOrderedSame) {
+        NSLog(@"AppsFlyer: Skipping self-opened URL with app scheme: %@", url.scheme);
+        return YES;
+    }
+    // Also skip if the source application is the app itself
+    if (sourceApplication && bundleId && [sourceApplication isEqualToString:bundleId]) {
+        NSLog(@"AppsFlyer: Skipping URL opened by app itself: %@", sourceApplication);
+        return YES;
+    }
+    return NO;
+}
+
 - (void) handleOpenUrl:(NSURL *)url options:(NSDictionary *)options{
+    NSString *sourceApp = options[UIApplicationOpenURLOptionsSourceApplicationKey];
+    if ([self isSelfOpenedUrl:url sourceApplication:sourceApp]) {
+        return;
+    }
     if(self.isBridgeReady == YES){
         [[AppsFlyerLib shared] handleOpenUrl:url options:options];
     }else{
@@ -55,6 +76,9 @@
 }
 
 - (void) handleOpenUrl:(NSURL *)url sourceApplication:(NSString*)sourceApplication annotation:(id)annotation{
+    if ([self isSelfOpenedUrl:url sourceApplication:sourceApplication]) {
+        return;
+    }
     if(self.isBridgeReady == YES){
         [[AppsFlyerLib shared] handleOpenURL:url sourceApplication:sourceApplication withAnnotation:annotation];
     }else{
